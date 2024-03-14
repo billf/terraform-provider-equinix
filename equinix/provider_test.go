@@ -167,7 +167,7 @@ func copyMap(source map[string]interface{}) map[string]interface{} {
 }
 
 func setSchemaValueIfNotEmpty(key string, value interface{}, d *schema.ResourceData) error {
-	if !isEmpty(value) {
+	if !comparisons.IsEmpty(value) {
 		return d.Set(key, value)
 	}
 	return nil
