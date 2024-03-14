@@ -1,4 +1,4 @@
-package equinix
+package device
 
 import (
 	"context"
@@ -218,7 +218,7 @@ var neDeviceVendorConfigDescriptions = map[string]string{
 	"PanoramaAuthKey":   "Panorama Server Auth Key. This field is relevant only for Palo Alto Networks Firewall devices",
 }
 
-func resourceNetworkDevice() *schema.Resource {
+func Resource() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceNetworkDeviceCreate,
 		ReadContext:   resourceNetworkDeviceRead,
