@@ -9,10 +9,10 @@ import (
 	"path"
 	"reflect"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
-
 	"slices"
 
 	"github.com/equinix/terraform-provider-equinix/internal/converters"
@@ -36,9 +36,7 @@ var (
 	ipAddressTypes  = []string{"public_ipv4", "private_ipv4", "public_ipv6"}
 )
 
-var (
-	deviceCommonIncludes = []string{"project", "metro", "facility", "hardware_reservation"}
-)
+var deviceCommonIncludes = []string{"project", "metro", "facility", "hardware_reservation"}
 
 func resourceMetalDevice() *schema.Resource {
 	return &schema.Resource{
