@@ -71,54 +71,6 @@ func TestProvider(t *testing.T) {
 	}
 }
 
-// Deprecated test moved to internal/comparissons/comparisons_test.go
-func TestProvider_stringsFound(t *testing.T) {
-	// given
-	needles := []string{"key1", "key5"}
-	hay := []string{"key1", "key2", "Key3", "key4", "key5"}
-	// when
-	result := stringsFound(needles, hay)
-	// then
-	assert.True(t, result, "Given strings were found")
-}
-
-// Deprecated test moved to internal/comparissons/comparisons_test.go
-func TestProvider_stringsFound_negative(t *testing.T) {
-	// given
-	needles := []string{"key1", "key6"}
-	hay := []string{"key1", "key2", "Key3", "key4", "key5"}
-	// when
-	result := stringsFound(needles, hay)
-	// then
-	assert.False(t, result, "Given strings were found")
-}
-
-// Deprecated test moved to internal/comparissons/comparisons_test.go
-func TestProvider_isEmpty(t *testing.T) {
-	// given
-	input := []interface{}{
-		"test",
-		"",
-		nil,
-		123,
-		0,
-		43.43,
-	}
-	expected := []bool{
-		false,
-		true,
-		true,
-		false,
-		true,
-		false,
-		true,
-	}
-	// when then
-	for i := range input {
-		assert.Equal(t, expected[i], isEmpty(input[i]), "Input %v produces expected result %v", input[i], expected[i])
-	}
-}
-
 func TestProvider_setSchemaValueIfNotEmpty(t *testing.T) {
 	// given
 	key := "test"
@@ -135,43 +87,6 @@ func TestProvider_setSchemaValueIfNotEmpty(t *testing.T) {
 	// then
 	_, ok := d.GetOk(key)
 	assert.False(t, ok, "Key was not set")
-}
-
-// Deprecated test moved to internal/comparissons/comparisons_test.go
-func TestProvider_slicesMatch(t *testing.T) {
-	// given
-	input := [][][]string{
-		{
-			{"DC", "SV", "FR"},
-			{"FR", "SV", "DC"},
-		},
-		{
-			{"SV"},
-			{},
-		},
-		{
-			{"DC", "DC", "DC"},
-			{"DC", "SV", "DC"},
-		},
-		{
-			{}, {},
-		},
-	}
-	expected := []bool{
-		true,
-		false,
-		false,
-		true,
-	}
-	// when
-	results := make([]bool, len(expected))
-	for i := range input {
-		results[i] = slicesMatch(input[i][0], input[i][1])
-	}
-	// then
-	for i := range expected {
-		assert.Equal(t, expected[i], results[i])
-	}
 }
 
 //‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
