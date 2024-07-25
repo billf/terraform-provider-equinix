@@ -3,6 +3,7 @@ package gateway
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/equinix/equinix-sdk-go/services/metalv1"
@@ -180,21 +181,19 @@ func (r *Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp 
 	if err == nil {
 		// Wait for the deletion to be completed
 		deleteTimeout := r.DeleteTimeout(ctx, state.Timeouts)
-		deleteWaiter := getGatewayStateWaiter(
+		deleteWaiter := getDeleteWaiter(
 			ctx,
 			client,
 			id,
 			deleteTimeout,
 			[]string{string(metalv1.METALGATEWAYSTATE_DELETING)},
-			[]string{},
 		)
 		_, err = deleteWaiter.WaitForStateContext(ctx)
 	}
 
-	if equinix_errors.IgnoreHttpResponseErrors(equinix_errors.HttpForbidden, equinix_errors.HttpNotFound)(nil, err) != nil {
+	if err != nil {
 		resp.Diagnostics.AddError(
-			fmt.Sprintf("Failed to delete Metal Gateway %s", id), err.Error(),
-		)
+			fmt.Sprintf("Failed to delete Metal Gateway %s", id), err.Error())
 	}
 }
 
@@ -214,7 +213,14 @@ func getGatewayAndParse(ctx context.Context, client *metalv1.APIClient, state *R
 	return diags, nil
 }
 
-func getGatewayStateWaiter(ctx context.Context, client *metalv1.APIClient, id string, timeout time.Duration, pending, target []string) *retry.StateChangeConf {
+func getDeleteWaiter(ctx context.Context, client *metalv1.APIClient, id string, timeout time.Duration, pending []string) *retry.StateChangeConf {
+	// deletedMarker is a terraform-provider-only value that is used by the waiter
+	// to indicate that the connection appears to be deleted successfully based on
+	// status code
+	deletedMarker := "tf-marker-for-deleted-connection"
+
+	target := []string{deletedMarker}
+
 	return &retry.StateChangeConf{
 		Pending: pending,
 		Target:  target,
@@ -222,7 +228,9 @@ func getGatewayStateWaiter(ctx context.Context, client *metalv1.APIClient, id st
 			gw, resp, err := client.MetalGatewaysApi.FindMetalGatewayById(ctx, id).Include(includes).Execute()
 			if err != nil {
 				if resp != nil {
-					err = equinix_errors.FriendlyErrorForMetalGo(err, resp)
+					if equinix_errors.IgnoreHttpResponseErrors(http.StatusForbidden, http.StatusNotFound)(resp, err) != nil {
+						return gw, deletedMarker, nil
+					}
 				}
 				return 0, "", err
 			}
