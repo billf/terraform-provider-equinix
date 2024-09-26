@@ -144,16 +144,10 @@ func IgnoreResponseErrors(ignore ...func(*http.Response, error) bool) func(*pack
 		if resp != nil && resp.Response != nil {
 			r = resp.Response
 		}
-		mute := false
 		for _, ignored := range ignore {
 			if ignored(r, err) {
-				mute = true
-				break
+				return nil
 			}
-		}
-
-		if mute {
-			return nil
 		}
 		return err
 	}
@@ -190,16 +184,10 @@ func HasErrorCode(errors []fabricv4.Error, code string) bool {
 // provided checks
 func IgnoreHttpResponseErrors(ignore ...func(*http.Response, error) bool) func(*http.Response, error) error {
 	return func(resp *http.Response, err error) error {
-		mute := false
 		for _, ignored := range ignore {
 			if ignored(resp, err) {
-				mute = true
-				break
+				return nil
 			}
-		}
-
-		if mute {
-			return nil
 		}
 		return err
 	}
