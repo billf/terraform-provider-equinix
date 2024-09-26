@@ -27,7 +27,7 @@ func FriendlyError(err error) error {
 }
 
 func FriendlyErrorForMetalGo(err error, resp *http.Response) error {
-	errors := Errors([]string{err.Error()})
+	errors := Errors{err.Error()}
 	return convertToFriendlyError(errors, resp)
 }
 
@@ -50,10 +50,7 @@ func convertToFriendlyError(errors Errors, resp *http.Response) error {
 }
 
 func FormatFabricError(err error) error {
-	var errors Errors
-	errors = append(errors, err.Error())
-
-	return errors
+	return Errors{err.Error()}
 }
 
 func IsForbidden(err error) bool {
@@ -78,6 +75,8 @@ func IsNotFound(err error) bool {
 }
 
 type Errors []string
+
+var _ error = Errors{}
 
 func (e Errors) Error() string {
 	return strings.Join(e, "; ")
