@@ -2,10 +2,10 @@ package errors
 
 import (
 	"fmt"
-	"github.com/equinix/equinix-sdk-go/services/fabricv4"
 	"net/http"
 	"strings"
 
+	"github.com/equinix/equinix-sdk-go/services/fabricv4"
 	"github.com/equinix/rest-go"
 	"github.com/packethost/packngo"
 )
