@@ -138,7 +138,7 @@ func HttpNotFound(resp *http.Response, err error) bool {
 
 // ignoreResponseErrors ignores http response errors when matched by one of the
 // provided checks
-func IgnoreResponseErrors(ignore ...func(resp *http.Response, err error) bool) func(resp *packngo.Response, err error) error {
+func IgnoreResponseErrors(ignore ...func(*http.Response, error) bool) func(*packngo.Response, error) error {
 	return func(resp *packngo.Response, err error) error {
 		var r *http.Response
 		if resp != nil && resp.Response != nil {
@@ -188,7 +188,7 @@ func HasErrorCode(errors []fabricv4.Error, code string) bool {
 
 // ignoreHttpResponseErrors ignores http response errors when matched by one of the
 // provided checks
-func IgnoreHttpResponseErrors(ignore ...func(resp *http.Response, err error) bool) func(resp *http.Response, err error) error {
+func IgnoreHttpResponseErrors(ignore ...func(*http.Response, error) bool) func(*http.Response, error) error {
 	return func(resp *http.Response, err error) error {
 		mute := false
 		for _, ignored := range ignore {
