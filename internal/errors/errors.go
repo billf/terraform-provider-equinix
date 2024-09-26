@@ -65,11 +65,11 @@ func IsForbidden(err error) bool {
 }
 
 func IsNotFound(err error) bool {
-	if r, ok := err.(*ErrorResponse); ok {
+	switch r := err.(type) {
+	case *ErrorResponse:
 		return r.StatusCode == http.StatusNotFound && r.IsAPIError
-	}
-	if r, ok := err.(*packngo.ErrorResponse); ok && r.Response != nil {
-		return r.Response.StatusCode == http.StatusNotFound
+	case *packngo.ErrorResponse:
+		return r.Response != nil && r.Response.StatusCode == http.StatusNotFound
 	}
 	return false
 }
@@ -133,11 +133,7 @@ func HttpNotFound(resp *http.Response, err error) bool {
 		return false
 	}
 
-	switch err := err.(type) {
-	case *ErrorResponse, *packngo.ErrorResponse:
-		return IsNotFound(err)
-	}
-	return false
+	return IsNotFound(err)
 }
 
 // ignoreResponseErrors ignores http response errors when matched by one of the
