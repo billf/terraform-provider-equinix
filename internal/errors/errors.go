@@ -39,10 +39,8 @@ func convertToFriendlyError(errors Errors, resp *http.Response) error {
 	respHead := resp.Header
 
 	// this checks if the error comes from API (and not from cache/LB)
-	if len(errors) > 0 {
-		ct := respHead.Get("Content-Type")
-		xrid := respHead.Get("X-Request-Id")
-		if strings.Contains(ct, "application/json") && len(xrid) > 0 {
+	if len(errors) > 0 && len(respHead.Get("X-Request-Id")) > 0 {
+		if strings.Contains(respHead.Get("Content-Type"), "application/json") {
 			er.IsAPIError = true
 		}
 	}
